@@ -31,10 +31,9 @@ public class AreaServiceImpl implements AreaService {
         this.areaDao.countLog(1);
 
         ///
-//        test();
+        test();
         ///
 
-        test2();
 
         return areaList;
     }
