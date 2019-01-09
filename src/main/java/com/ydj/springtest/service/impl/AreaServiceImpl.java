@@ -31,13 +31,20 @@ public class AreaServiceImpl implements AreaService {
         this.areaDao.countLog(1);
 
         ///
-        test();
+//        test();
         ///
+
+        test2();
 
         return areaList;
     }
 
     private void test(){
+        String s = HttpKit.getHtmlContent("https://vip.qidianla.com/","test");
+        System.out.println("getHtmlContent()->"+s);
+    }
+
+    private void test2(){
         String s = HttpKit.getHtmlContent("https://vip.qidianla.com/","test");
         System.out.println("getHtmlContent()->"+s);
     }
