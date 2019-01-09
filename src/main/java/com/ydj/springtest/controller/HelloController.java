@@ -35,6 +35,7 @@ public class HelloController {
      **/
     @RequestMapping("/sendWeChat")
     public void send(HttpServletRequest request) {
+        System.out.println("request = [" + request + "]");
         Map<String, String[]> map = request.getParameterMap();
 
         String[] emails = new String[]{"qy01b0aa7b9347ba009ba730c6b7"};
