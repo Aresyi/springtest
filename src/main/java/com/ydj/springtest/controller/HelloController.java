@@ -1,6 +1,7 @@
 package com.ydj.springtest.controller;
 
 
+import com.dianping.cat.Cat;
 import com.ydj.springtest.entity.Area;
 import com.ydj.springtest.service.AreaService;
 import com.ydj.push.wx.SendWeChatUtils;
@@ -28,6 +29,19 @@ public class HelloController {
         return list;
     }
 
+    @RequestMapping("/index2")
+    private List<Area> index2(){
+        List<Area> list =  this.areaService.getAreaList();
+
+        try {
+            int i = 5/0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Cat.logError(e);
+            Cat.logMetricForCount("zeroException");
+        }
+        return list;
+    }
 
     /**
      * 发送微信方法
