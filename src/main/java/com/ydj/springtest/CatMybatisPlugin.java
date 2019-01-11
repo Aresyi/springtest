@@ -81,12 +81,13 @@ public class CatMybatisPlugin implements Interceptor {
         Configuration configuration = mappedStatement.getConfiguration();
         String sql = showSql(configuration, boundSql);
 
+        String s = this.getSQLDatabase();
+        Cat.logEvent("SQL.Database", s);
+
         //获取SQL类型
         SqlCommandType sqlCommandType = mappedStatement.getSqlCommandType();
         Cat.logEvent("SQL.Method", sqlCommandType.name().toLowerCase(), Message.SUCCESS, sql);
 
-        String s = this.getSQLDatabase();
-        Cat.logEvent("SQL.Database", s);
 
         Object returnObj = null;
         try {
