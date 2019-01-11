@@ -169,7 +169,6 @@ public class CatMybatisPlugin implements Interceptor {
      * @param runtimeDataSourceClassName 运行时真实的数据源的类名称
      * @param sqlURLMethodName           获取SQL地址的方法名称
      *
-     * @author fanlychie (https://github.com/fanlychie)
      */
     private String getDataSourceSqlURL(DataSource dataSource, String runtimeDataSourceClassName, String sqlURLMethodName) {
         Class<?> dataSourceClass = null;
