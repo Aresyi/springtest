@@ -1,16 +1,22 @@
 package com.ydj.springtest.config.dao;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.ydj.springtest.CatJdbcTemplate;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
 
-//这个代表配置需要写到spring ioc这个容器里面
+/**测试两种方式建立连接池*/
 @Configuration
-//配置mybatis mapper的扫描路径
 @MapperScan("com.ydj.springtest.dao")
 public class DataSourceConfiguration {
 
@@ -30,7 +36,9 @@ public class DataSourceConfiguration {
      * 生成与spring-dao.xml对应的bean  dataSource
      * @return
      */
-    @Bean(name = "dataSource")
+    @Bean(name = "myBatisDataSource")
+    @Qualifier("myBatisDataSource")
+    @Primary
     public ComboPooledDataSource createDataSource() throws PropertyVetoException {
         //创建DataSource实例
         ComboPooledDataSource dataSource = new ComboPooledDataSource();
@@ -52,5 +60,19 @@ public class DataSourceConfiguration {
 
         return dataSource;
     }
+
+
+    @Bean(name = "jdbcDataSource")
+    @Qualifier("jdbcDataSource")
+    @ConfigurationProperties(prefix="pmOld.db")
+    public DataSource jdbcDataSource() {
+        return DataSourceBuilder.create().build();
+    }
+
+    @Bean(name = "catJdbcTemplateTest")
+    public JdbcTemplate catJdbcTemplateTest(@Qualifier("jdbcDataSource") DataSource dataSource) {
+        return new CatJdbcTemplate(dataSource);
+    }
+
 
 }

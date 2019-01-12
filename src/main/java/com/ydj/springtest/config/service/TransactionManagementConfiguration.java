@@ -1,12 +1,14 @@
 package com.ydj.springtest.config.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 @Configuration
@@ -15,7 +17,8 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 public class TransactionManagementConfiguration implements TransactionManagementConfigurer {
 
-    @Autowired
+    @Resource
+    @Qualifier("myBatisDataSource")
     private DataSource dataSource;
 
     /**

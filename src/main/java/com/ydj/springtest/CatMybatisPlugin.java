@@ -81,12 +81,13 @@ public class CatMybatisPlugin implements Interceptor {
         Configuration configuration = mappedStatement.getConfiguration();
         String sql = showSql(configuration, boundSql);
 
+        String s = this.getSQLDatabase();
+        Cat.logEvent("SQL.Database", s);
+
         //获取SQL类型
         SqlCommandType sqlCommandType = mappedStatement.getSqlCommandType();
         Cat.logEvent("SQL.Method", sqlCommandType.name().toLowerCase(), Message.SUCCESS, sql);
 
-        String s = this.getSQLDatabase();
-        Cat.logEvent("SQL.Database", s);
 
         Object returnObj = null;
         try {
@@ -168,7 +169,6 @@ public class CatMybatisPlugin implements Interceptor {
      * @param runtimeDataSourceClassName 运行时真实的数据源的类名称
      * @param sqlURLMethodName           获取SQL地址的方法名称
      *
-     * @author fanlychie (https://github.com/fanlychie)
      */
     private String getDataSourceSqlURL(DataSource dataSource, String runtimeDataSourceClassName, String sqlURLMethodName) {
         Class<?> dataSourceClass = null;
