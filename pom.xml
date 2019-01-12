@@ -5,7 +5,7 @@
 
 	<groupId>com.ydj.test</groupId>
 	<artifactId>springtest</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>springtest</name>
@@ -224,26 +224,26 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>2.4</version>
             </plugin>
-
 		</plugins>
+
+		<defaultGoal>compile</defaultGoal>
 	</build>
 
 	<distributionManagement>
 		<repository>
 			<id>maven-releases</id>
 			<name>maven-releases</name>
-			<url>http://118.31.35.172:8181/repository/maven-releases/</url>
+			<url>http://mvn.woshipm.com/repository/maven-releases/</url>
 		</repository>
 		<snapshotRepository>
 			<id>maven-snapshots</id>
 			<name>maven-snapshots</name>
-			<url>http://118.31.35.172:8181/repository/maven-snapshots/</url>
+			<url>http://mvn.woshipm.com/repository/maven-snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 
