@@ -126,6 +126,8 @@ public class CatJdbcTemplate extends JdbcTemplate {
             }
             T result = action.doInStatement(stmtToUse);
             handleWarnings(stmt);
+
+            t.setStatus(Transaction.SUCCESS);
             return result;
         }
         catch (SQLException ex) {
@@ -184,6 +186,8 @@ public class CatJdbcTemplate extends JdbcTemplate {
             }
             T result = action.doInPreparedStatement(psToUse);
             handleWarnings(ps);
+
+            t.setStatus(Transaction.SUCCESS);
             return result;
         }
         catch (SQLException ex) {
@@ -250,6 +254,8 @@ public class CatJdbcTemplate extends JdbcTemplate {
             }
             T result = action.doInCallableStatement(csToUse);
             handleWarnings(cs);
+
+            t.setStatus(Transaction.SUCCESS);
             return result;
         }
         catch (SQLException ex) {
