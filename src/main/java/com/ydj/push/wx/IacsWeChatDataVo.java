@@ -7,6 +7,7 @@ public class IacsWeChatDataVo {
     Object text;//实际接收Map类型数据
 
     public Object getText() {
+    	
         return text;
     }
     public void setText(Object text) {

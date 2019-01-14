@@ -27,6 +27,8 @@ public class SendWeChatUtils {
     private static final int APPLICATION_ID = 1000016;
     //字符编码集
     private static final String CHARSET = "utf-8";
+    
+    
 
     private CloseableHttpClient httpClient;
     private HttpPost httpPost;//用于提交登陆数据
