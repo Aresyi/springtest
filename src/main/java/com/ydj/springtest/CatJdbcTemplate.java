@@ -341,34 +341,34 @@ public class CatJdbcTemplate extends JdbcTemplate {
     }
 
     private String getJdbcUrl() {
-        // 客户端使用的数据源
         javax.sql.DataSource dataSource = this.getDataSource();
         if (dataSource != null) {
-            // 处理常见的数据源
-            switch (dataSource.getClass().getName()) {
-                // druid
-                case DruidDataSourceClassName:
-                    return getDataSourceJdbcURL(dataSource, DruidDataSourceClassName, "getUrl");
-                // dbcp
-                case DBCPBasicDataSourceClassName:
-                    return getDataSourceJdbcURL(dataSource, DBCPBasicDataSourceClassName, "getUrl");
-                // dbcp2
-                case DBCP2BasicDataSourceClassName:
-                    return getDataSourceJdbcURL(dataSource, DBCP2BasicDataSourceClassName, "getUrl");
-                // c3p0
-                case C3P0ComboPooledDataSourceClassName:
-                    return getDataSourceJdbcURL(dataSource, C3P0ComboPooledDataSourceClassName, "getJdbcUrl");
-                // HikariCP
-                case HikariCPDataSourceClassName:
-                    return getDataSourceJdbcURL(dataSource, HikariCPDataSourceClassName, "getJdbcUrl");
-                // BoneCP
-                case BoneCPDataSourceClassName:
-                    return getDataSourceJdbcURL(dataSource, BoneCPDataSourceClassName, "getJdbcUrl");
-                case TomcatJdbcDataSourceClassName:
-                    return getDataSourceJdbcURL(dataSource, TomcatJdbcDataSourceClassName, "getUrl");
-            }
+            return "-";
         }
-        return "-";
+        // 处理常见的数据源
+        switch (dataSource.getClass().getName()) {
+            // druid
+            case DruidDataSourceClassName:
+                return getDataSourceJdbcURL(dataSource, DruidDataSourceClassName, "getUrl");
+            // dbcp
+            case DBCPBasicDataSourceClassName:
+                return getDataSourceJdbcURL(dataSource, DBCPBasicDataSourceClassName, "getUrl");
+            // dbcp2
+            case DBCP2BasicDataSourceClassName:
+                return getDataSourceJdbcURL(dataSource, DBCP2BasicDataSourceClassName, "getUrl");
+            // c3p0
+            case C3P0ComboPooledDataSourceClassName:
+                return getDataSourceJdbcURL(dataSource, C3P0ComboPooledDataSourceClassName, "getJdbcUrl");
+            // HikariCP
+            case HikariCPDataSourceClassName:
+                return getDataSourceJdbcURL(dataSource, HikariCPDataSourceClassName, "getJdbcUrl");
+            // BoneCP
+            case BoneCPDataSourceClassName:
+                return getDataSourceJdbcURL(dataSource, BoneCPDataSourceClassName, "getJdbcUrl");
+            case TomcatJdbcDataSourceClassName:
+                return getDataSourceJdbcURL(dataSource, TomcatJdbcDataSourceClassName, "getUrl");
+        }
+        return "--";
     }
 
 
@@ -376,7 +376,6 @@ public class CatJdbcTemplate extends JdbcTemplate {
         Class<?> dataSourceClass = null;
         try {
             dataSourceClass = Class.forName(runtimeDataSourceClassName);
-
             Method sqlURLMethod = ReflectionUtils.findMethod(dataSourceClass, sqlURLMethodName);
             return (String) ReflectionUtils.invokeMethod(sqlURLMethod, dataSource);
         } catch (ClassNotFoundException e) {
