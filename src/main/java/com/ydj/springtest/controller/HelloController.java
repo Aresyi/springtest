@@ -49,6 +49,10 @@ public class HelloController {
                     }
                 });
 
+        catJdbcTemplateTest.update("update ad_base_info set id = 152 where id=152");
+
+        List<String> strings = catJdbcTemplateTest.queryForList("select name FROM ad_base_info limit 5", String.class);
+
         return list;
     }
 
