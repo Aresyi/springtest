@@ -342,7 +342,7 @@ public class CatJdbcTemplate extends JdbcTemplate {
 
     private String getJdbcUrl() {
         javax.sql.DataSource dataSource = this.getDataSource();
-        if (dataSource != null) {
+        if (dataSource == null) {
             return "-";
         }
         // 处理常见的数据源
