@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydj.springtest.service.user.dao.UserInfoDao">
+    <select id="getUserInfo" resultType="com.ydj.springtest.service.user.dao.entity.UserInfoEntity">
+        SELECT
+        *
+        FROM
+        tss_job
+        ORDER BY id DESC
+        limit 5
+    </select>
+
+    <select id="countLog" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        tss_log
+        where
+        state = #{state}
+    </select>
+
+</mapper>
