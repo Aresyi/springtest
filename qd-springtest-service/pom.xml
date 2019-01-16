@@ -231,6 +231,15 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <skip>true</skip> <!--配置maven deploy时排除该module上传jar包到私服-->
+                </configuration>
+            </plugin>
         </plugins>
 
         <finalName>qd-springtest-service</finalName>
