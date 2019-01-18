@@ -1,8 +1,9 @@
 package com.ydj.springtest.utils;
 
 import com.dianping.cat.Cat;
-import com.dianping.cat.message.Message;
 import com.dianping.cat.message.Transaction;
+import com.dianping.cat.message.spi.MessageTree;
+import com.ydj.test.cat.integration.my.MyCatConstants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.*;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -18,10 +19,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 
@@ -34,8 +32,10 @@ import java.util.Map.Entry;
  *
  */
 public class HttpKit {
-	
-	
+
+	private static final ThreadLocal<Cat.Context> CAT_CONTEXT = new ThreadLocal<>();
+
+
 	/**
 	 * 根据网址url获取网页内容
 	 * @param url
@@ -64,22 +64,7 @@ public class HttpKit {
 	 * @createTime : 2017年4月27日 下午2:15:48
 	 */
 	public static String getHtmlContent(String url,String invoker) {
-
-		Transaction t = Cat.newTransaction("RPC", "getHtmlContent");
-		Cat.logEvent("RPC.Type", "Http", Message.SUCCESS, url);
-		Cat.logEvent("RPC.Invoker", invoker);
-
-
-		String html = null;
-		try {
-			html = getHtmlContent(url, 5000, 5000, "GBK");
-			t.setStatus(Transaction.SUCCESS);
-		} catch (Exception e) {
-			Cat.logError(e);
-		} finally {
-			t.complete();
-		}
-
+		String html =  getHtmlContent(url, 5000, 5000, "GBK");
 		return html;
 	}
 
@@ -108,9 +93,10 @@ public class HttpKit {
 
 		StringBuffer inputLine = new StringBuffer();
 
+		Transaction transaction = Cat.newTransaction(MyCatConstants.CROSS_CONSUMER, url);
+
 		try {
-			HttpURLConnection urlConnection = (HttpURLConnection) new URL(url)
-					.openConnection();
+			HttpURLConnection urlConnection = (HttpURLConnection) new URL(url).openConnection();
 
 			HttpURLConnection.setFollowRedirects(true);
 			urlConnection.setConnectTimeout(connectTimeout);
@@ -118,27 +104,94 @@ public class HttpKit {
 
 			urlConnection.setRequestProperty("Connection", "keep-alive");
 			urlConnection.setRequestProperty("User-Agent", userAgent);
-			urlConnection
-					.setRequestProperty("Accept",
-							"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+			urlConnection.setRequestProperty("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
 			urlConnection.setRequestProperty("Cookie", cookie);
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(
-					urlConnection.getInputStream(), charset));
+            addRequestHeadAndCreateConsumerCross(urlConnection);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), charset));
 
 			String str;
-			while ((str = in.readLine()) != null)
+			while ((str = in.readLine()) != null) {
 				inputLine.append(str).append("\r\n");
+			}
 
 			in.close();
+			transaction.setStatus(Transaction.SUCCESS);
 		} catch (Exception e) {
-			// e.printStackTrace();
-			// System.err.println(url);
+			transaction.setStatus(e);
+		}finally {
+			transaction.complete();
 		}
 
 		return inputLine.toString();
-
 	}
+
+
+	private static class HTTPCatContext implements Cat.Context{
+
+		private Map<String,String> properties = new HashMap<>();
+
+		@Override
+		public void addProperty(String key, String value) {
+			properties.put(key,value);
+		}
+
+		@Override
+		public String getProperty(String key) {
+			return properties.get(key);
+		}
+	}
+
+
+	private static Cat.Context getContext(String root,String parent,String child){
+		Cat.Context context = CAT_CONTEXT.get();
+		if(context == null){
+			context = new HTTPCatContext();
+			context.addProperty(Cat.Context.ROOT,root);
+			context.addProperty(Cat.Context.PARENT,parent);
+			context.addProperty(Cat.Context.CHILD,child);
+			CAT_CONTEXT.set(context);
+		}
+		return context;
+	}
+
+	private static void addRequestHeadAndCreateConsumerCross(HttpURLConnection urlConnection){
+
+        MessageTree threadLocalMessageTree = Cat.getManager().getThreadLocalMessageTree();
+        String root = threadLocalMessageTree.getRootMessageId();
+        String parent =  threadLocalMessageTree.getParentMessageId();
+        String child = Cat.getCurrentMessageId();
+
+        System.out.println(String.format("rootId=%s parentId=%s childId=%s",root,parent,child));
+
+        if (StringUtils.isEmpty(root)){
+            root = child;
+        }
+
+        if (StringUtils.isEmpty(parent)){
+            parent = child;
+        }
+        System.out.println(String.format("rootId=%s parentId=%s childId=%s",root,parent,child));
+
+        urlConnection.setRequestProperty(MyCatConstants.CAT_HTTP_HEADER_ROOT_MESSAGE_ID,root);
+        urlConnection.setRequestProperty(MyCatConstants.CAT_HTTP_HEADER_PARENT_MESSAGE_ID,parent);
+        urlConnection.setRequestProperty(MyCatConstants.CAT_HTTP_HEADER_CHILD_MESSAGE_ID,child);
+        urlConnection.setRequestProperty(MyCatConstants.CAT_HTTP_HEADER_TRACE_MODE,"true");
+        urlConnection.setRequestProperty(MyCatConstants.APPLICATION_KEY,SysProperties.getAppName());
+
+        String url = urlConnection.getURL().toString();
+        Cat.logEvent(MyCatConstants.CONSUMER_CALL_APP,getSecDomain(url));
+        Cat.logEvent(MyCatConstants.CONSUMER_CALL_SERVER,getSecDomain(url));
+        Cat.logEvent(MyCatConstants.CONSUMER_CALL_PORT,getPort(url));
+
+        Cat.Context context = getContext(root, parent, child);
+        String domain = Cat.getManager().getDomain();
+
+        Cat.logRemoteCallClient(context,domain);
+	}
+
+
 
 	/**
 	 * POST请求
@@ -248,5 +301,41 @@ public class HttpKit {
 
 		return "";
 	}
+
+
+
+    // 二级域名提取
+    private static final String RE_TOP = "([a-z0-9][a-z0-9\\-]*?\\.(?:com|cn|net|org|gov|info|la|cc|co)(?:\\.(?:cn|jp))?)";
+
+    public static String getSecDomain(String url) {
+        try {
+            String s = url.replace("https://","").replace("http://","").replace("www.","");
+            s = s.substring(0,s.indexOf("."));
+            return  s;
+        } catch (Exception e) {
+        }
+        return "www";
+    }
+
+    public static String getPort(String url) {
+        try {
+            String s = url.substring(url.indexOf("://")+3);
+            s = s.substring(s.indexOf(":")+1,s.indexOf("/"));
+            return Integer.valueOf(s)+"";
+        } catch (Exception e) {
+        }
+        return "80";
+    }
+
+
+
+    public static void main(String[] args) {
+        String url = "https://www.xyz.qidianla.com/";
+        System.out.println(getPort(url));
+        System.out.println(getSecDomain(url));
+
+        String sql ="select id from news_basic where uid=? limit 1";
+        System.out.println(sql.substring(0,Math.min(25,sql.length())));
+    }
 
 }
