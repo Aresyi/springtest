@@ -3,6 +3,8 @@ package com.ydj.springtest.service.user.controller;
 import com.dianping.cat.Cat;
 import com.ydj.springtest.service.user.dao.entity.UserInfoEntity;
 import com.ydj.springtest.service.user.service.UserService;
+import com.ydj.springtest.utils.HttpKit;
+import com.ydj.springtest.utils.SysProperties;
 import com.ydj.test.wxpush.SendWeChatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -43,6 +45,20 @@ public class HelloController {
             Cat.logMetricForCount("zeroException");
         }
         return list;
+    }
+
+    @RequestMapping("/index3")
+    private String index3(){
+        String s = HttpKit.getHtmlContent("http://localhost:8080/springtest/index?CONSUMER-APP-NAME=springtestMyself","test");
+
+        s = HttpKit.getHtmlContent("http://localhost:8080/springtest/index4?CONSUMER-APP-NAME=springtestMyself2","test");
+        return s;
+    }
+
+    @RequestMapping("/index4")
+    private String index4(){
+        this.userService.testSpringjdbc();
+        return SysProperties.getAppName();
     }
 
     /**

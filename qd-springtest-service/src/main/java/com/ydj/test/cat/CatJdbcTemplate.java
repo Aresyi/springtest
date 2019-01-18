@@ -54,12 +54,12 @@ public class CatJdbcTemplate extends JdbcTemplate {
 
         Assert.notNull(action, "Callback object must not be null");
 
-        Transaction t = Cat.newTransaction("SQL", "springJdbc");
+        String sql = getSql(action);
+        Transaction t = Cat.newTransaction("SQL", getSubSql(sql));
 
         Connection con = DataSourceUtils.getConnection(getDataSource());
         try {
 
-            String sql = getSql(action);
             Cat.logEvent("SQL.Database", this.getSQLDatabase());
             Cat.logEvent("SQL.Method", getSqlType(sql), Message.SUCCESS, sql);
 
@@ -85,7 +85,7 @@ public class CatJdbcTemplate extends JdbcTemplate {
             // in the case when the exception translator hasn't been initialized yet.
             DataSourceUtils.releaseConnection(con, getDataSource());
             con = null;
-            throw getExceptionTranslator().translate("ConnectionCallback", getSql(action), ex);
+            throw getExceptionTranslator().translate("ConnectionCallback", sql, ex);
         }
         finally {
             DataSourceUtils.releaseConnection(con, getDataSource());
@@ -103,13 +103,13 @@ public class CatJdbcTemplate extends JdbcTemplate {
     public <T> T execute(StatementCallback<T> action) throws DataAccessException {
         Assert.notNull(action, "Callback object must not be null");
 
-        Transaction t = Cat.newTransaction("SQL", "springJdbc");
+        String sql = getSql(action);
+        Transaction t = Cat.newTransaction("SQL", getSubSql(sql));
 
         Connection con = DataSourceUtils.getConnection(getDataSource());
         Statement stmt = null;
         try {
 
-            String sql = getSql(action);
             Cat.logEvent("SQL.Database", this.getSQLDatabase());
             Cat.logEvent("SQL.Method", getSqlType(sql), Message.SUCCESS, sql);
 
@@ -138,7 +138,7 @@ public class CatJdbcTemplate extends JdbcTemplate {
             stmt = null;
             DataSourceUtils.releaseConnection(con, getDataSource());
             con = null;
-            throw getExceptionTranslator().translate("StatementCallback", getSql(action), ex);
+            throw getExceptionTranslator().translate("StatementCallback",sql, ex);
         }
         finally {
             JdbcUtils.closeStatement(stmt);
@@ -163,13 +163,13 @@ public class CatJdbcTemplate extends JdbcTemplate {
             logger.debug("Executing prepared SQL statement" + (sql != null ? " [" + sql + "]" : ""));
         }
 
-        Transaction t = Cat.newTransaction("SQL", "springJdbc");
+        String sql = getSql(psc);
+        Transaction t = Cat.newTransaction("SQL", getSubSql(sql));
 
         Connection con = DataSourceUtils.getConnection(getDataSource());
         PreparedStatement ps = null;
         try {
 
-            String sql = getSql(psc);
             Cat.logEvent("SQL.Database", this.getSQLDatabase());
             Cat.logEvent("SQL.Method", getSqlType(sql), Message.SUCCESS, sql);
 
@@ -197,7 +197,7 @@ public class CatJdbcTemplate extends JdbcTemplate {
             if (psc instanceof ParameterDisposer) {
                 ((ParameterDisposer) psc).cleanupParameters();
             }
-            String sql = getSql(psc);
+
             psc = null;
             JdbcUtils.closeStatement(ps);
             ps = null;
@@ -232,13 +232,13 @@ public class CatJdbcTemplate extends JdbcTemplate {
             logger.debug("Calling stored procedure" + (sql != null ? " [" + sql  + "]" : ""));
         }
 
-        Transaction t = Cat.newTransaction("SQL", "springJdbc");
+        String sql = getSql(csc);
+        Transaction t = Cat.newTransaction("SQL", getSubSql(sql));
 
         Connection con = DataSourceUtils.getConnection(getDataSource());
         CallableStatement cs = null;
         try {
 
-            String sql = getSql(csc);
             Cat.logEvent("SQL.Database", this.getSQLDatabase());
             Cat.logEvent("SQL.Method", getSqlType(sql), Message.SUCCESS, sql);
 
@@ -265,7 +265,6 @@ public class CatJdbcTemplate extends JdbcTemplate {
             if (csc instanceof ParameterDisposer) {
                 ((ParameterDisposer) csc).cleanupParameters();
             }
-            String sql = getSql(csc);
             csc = null;
             JdbcUtils.closeStatement(cs);
             cs = null;
@@ -288,6 +287,14 @@ public class CatJdbcTemplate extends JdbcTemplate {
             return ((SqlProvider) sqlProvider).getSql();
         }else {
             return "";
+        }
+    }
+
+    private static String getSubSql(String sql) {
+        try {
+            return sql.substring(0,Math.min(25,sql.length()));
+        } catch (Exception e) {
+           return "springJdbc";
         }
     }
 
