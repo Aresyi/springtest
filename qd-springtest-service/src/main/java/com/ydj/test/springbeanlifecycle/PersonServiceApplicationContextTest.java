@@ -13,7 +13,7 @@ public class PersonServiceApplicationContextTest{
 
         System.out.println("start init ioc container");
 //        ApplicationContext aContext = new ClassPathXmlApplicationContext("applicationContext.xml");
-        ApplicationContext aContext = new FileSystemXmlApplicationContext("D:\\project\\springtest\\src\\main\\java\\com\\ydj\\beanlifecycle\\test\\applicationContext.xml");
+        ApplicationContext aContext = new FileSystemXmlApplicationContext("D:\\project\\springtest\\qd-springtest-service\\src\\main\\java\\com\\ydj\\test\\springbeanlifecycle\\applicationContext.xml");
         System.out.println("end loading xml");
         Person person = (Person)aContext.getBean("person1");
         System.out.println(person);
