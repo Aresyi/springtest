@@ -13,6 +13,33 @@
       <version>3.0.0</version>
   </dependency>
 ```
+- 环境规范：
+```
+Windows环境（具体在哪个盘下，取决于你的项目）：
+新建D:/data/appdatas/cat/client.xml目录和文件
+新建D:/data/applogs/cat/目录
+
+Linux环境：
+新建/data/appdatas/cat/client.xml
+新建D:/data/applogs/cat/目录
+
+注意：目录要赋予读写权限
+```
+client.xml文件如下：
+```
+<?xml version="1.0" encoding="utf-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema" xsi:noNamespaceSchemaLocation="config.xsd">
+    <servers>
+        <server ip="192.26.46.55" port="2280" http-port="8787" /><!--192.26.46.55为CAT服务器IP-->
+    </servers>
+</config>
+```
+
+- 项目目录规范：
+```
+../src/main/resources/META-INF/app.properties文件中添加应用服务名称，如：app.name=test-web
+```
+
 - Java接入参考：https://github.com/dianping/cat/blob/master/lib/java/README.zh-CN.md
 
 ### 2.2、服务端基本信息：
@@ -35,6 +62,17 @@
 - 集成springboot使用：
 ```
 com.ydj.test.cat.CatFilterConfigure
+
+    @Bean
+    public FilterRegistrationBean catFilter() {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        CatFilter filter = new MyHttpCatFilter();
+        registration.setFilter(filter);
+        registration.addUrlPatterns("/*");
+        registration.setName("cat-filter");
+        registration.setOrder(1);
+        return registration;
+    }
 ```
 - 集成Mybatis使用：
 ```
@@ -43,4 +81,9 @@ com.ydj.test.cat.CatMybatisPlugin
 - 集成springjdbc使用：
 ```
 com.ydj.test.cat.CatJdbcTemplate
+
+    @Bean(name = "jdbcTemplate")
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        return new CatJdbcTemplate(dataSource);
+    }
 ```
