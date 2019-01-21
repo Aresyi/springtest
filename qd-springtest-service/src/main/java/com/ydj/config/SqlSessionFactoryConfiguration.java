@@ -14,7 +14,14 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import javax.sql.DataSource;
 import java.io.IOException;
 
-
+/**
+ *
+ * @author : Ares.yi
+ * @createTime : 2019-1-19
+ * @version : 1.0
+ * @description :测试两种方式建立连接池
+ *
+ */
 @Configuration
 public class SqlSessionFactoryConfiguration{
 

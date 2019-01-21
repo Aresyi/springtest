@@ -13,7 +13,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
 
-/**测试两种方式建立连接池*/
+/**
+ *
+ * @author : Ares.yi
+ * @createTime : 2019-1-19
+ * @version : 1.0
+ * @description :测试两种方式建立连接池
+ *
+ */
 @Configuration
 @MapperScan("com.ydj.springtest.service.user.dao")
 public class DataSourceConfiguration {

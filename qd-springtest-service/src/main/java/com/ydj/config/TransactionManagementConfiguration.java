@@ -10,6 +10,14 @@ import org.springframework.transaction.annotation.TransactionManagementConfigure
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+/**
+ *
+ * @author : Ares.yi
+ * @createTime : 2019-1-19
+ * @version : 1.0
+ * @description :测试两种方式建立连接池
+ *
+ */
 @Configuration
 @EnableTransactionManagement
 public class TransactionManagementConfiguration implements TransactionManagementConfigurer {

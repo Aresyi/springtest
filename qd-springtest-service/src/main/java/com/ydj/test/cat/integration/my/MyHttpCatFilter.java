@@ -4,6 +4,8 @@ import com.dianping.cat.Cat;
 import com.dianping.cat.message.Transaction;
 import com.dianping.cat.servlet.CatFilter;
 import com.dianping.cat.util.UrlParser;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.*;
@@ -11,11 +13,27 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+/**
+ *
+ * @author : Ares.yi
+ * @createTime : 2019-1-19
+ * @version : 1.0
+ * @description :
+ *
+ */
 public class MyHttpCatFilter extends CatFilter implements Filter {
 
     private static final ThreadLocal<Cat.Context> CAT_CONTEXT = new ThreadLocal<>();
+
+    private static Set<String> excludeSuffixes = new HashSet<>();
+
+    static {
+        excludeSuffixes.addAll(Lists.newArrayList(".js",".css",".jpeg",".jpg",".png"));
+    }
 
 
     @Override
@@ -27,6 +45,16 @@ public class MyHttpCatFilter extends CatFilter implements Filter {
         }
 
         HttpServletRequest req = (HttpServletRequest) request;
+
+        String path = req.getRequestURI();
+        if (CollectionUtils.isNotEmpty(excludeSuffixes) ){
+            for (String s : excludeSuffixes){
+                if (path.endsWith(s)){
+                    chain.doFilter(request, response);
+                    return;
+                }
+            }
+        }
 
         //若Header中有context相关属性，则生成调用链
         if(null != req.getHeader(MyCatConstants.CAT_HTTP_HEADER_ROOT_MESSAGE_ID)){
@@ -91,5 +119,8 @@ public class MyHttpCatFilter extends CatFilter implements Filter {
         Cat.logEvent(MyCatConstants.PROVIDER_CALL_SERVER, req.getRemoteHost());
     }
 
+    public void  addExcludeSuffix(String suffix){
+        excludeSuffixes.add(suffix);
+    }
 
 }

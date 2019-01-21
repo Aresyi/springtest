@@ -2,6 +2,14 @@ package com.ydj.test.cat.integration.my;
 
 import com.dianping.cat.CatConstants;
 
+/**
+ *
+ * @author : Ares.yi
+ * @createTime : 2019-1-19
+ * @version : 1.0
+ * @description :
+ *
+ */
 public class MyCatConstants extends CatConstants {
 
     public  static final String CROSS_CONSUMER ="PigeonCall";

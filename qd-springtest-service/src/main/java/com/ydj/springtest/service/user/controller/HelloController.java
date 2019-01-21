@@ -16,6 +16,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ *
+ * @author : Ares.yi
+ * @createTime : 2019-1-19
+ * @version : 1.0
+ * @description :
+ *
+ */
 @RestController
 @EnableAutoConfiguration
 public class HelloController {
