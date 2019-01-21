@@ -20,11 +20,11 @@ import java.util.Map;
 public class SendWeChatUtils {
 
     //微信企业ID
-    private static final String CORPID = "wwede66db4ec023cab";
+    private static final String CORPID = "test";
     //微信企业密匙
-    private static final String CORPSECRET = "qnGCY2y6-DOGkSpCQVjyoqRqmos8E6Oi9SIyfwy2ziE";
+    private static final String CORPSECRET = "testxxxxx";
     //微信应用ID
-    private static final int APPLICATION_ID = 1000016;
+    private static final int APPLICATION_ID = 123456;
     //字符编码集
     private static final String CHARSET = "utf-8";
     

@@ -3,7 +3,7 @@
 spring:
     datasource:
         name: test
-        url: jdbc:mysql://120.26.46.55:3306/tss
+        url: jdbc:mysql://192.1.46.55:3306/ydj
         username: root
         password: jlcxtest
         type: com.alibaba.druid.pool.DruidDataSource
