@@ -27,7 +27,8 @@
 	<modules>
 		<module>qd-springtest-api</module>
 		<module>qd-springtest-service</module>
-	</modules>
+        <module>test</module>
+    </modules>
 
 	<dependencyManagement>
 		<dependencies>
